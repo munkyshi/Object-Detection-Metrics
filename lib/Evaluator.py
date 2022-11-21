@@ -7,7 +7,7 @@
 #        COPPE - Universidade Federal do Rio de Janeiro                                   #
 #        Last modification: Oct 9th 2018                                                 #
 ###########################################################################################
-
+import json
 import os
 import sys
 from collections import Counter
@@ -154,6 +154,7 @@ class Evaluator:
                 'total TP': np.sum(TP),
                 'total FP': np.sum(FP)
             }
+            print(json.dumps(r, indent=2))
             ret.append(r)
         return ret
 

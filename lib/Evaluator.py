@@ -20,6 +20,17 @@ from BoundingBoxes import *
 from utils import *
 
 
+class NpEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.integer):
+            return int(obj)
+        if isinstance(obj, np.floating):
+            return float(obj)
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return json.JSONEncoder.default(self, obj)
+
+
 class Evaluator:
     def GetPascalVOCMetrics(self,
                             boundingboxes,
@@ -154,7 +165,7 @@ class Evaluator:
                 'total TP': np.sum(TP),
                 'total FP': np.sum(FP)
             }
-            print(json.dumps(r, indent=2))
+            print(json.dumps(r, indent=2, cls=NpEncoder))
             ret.append(r)
         return ret
 

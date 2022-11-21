@@ -47,6 +47,7 @@
 
 import argparse
 import glob
+import json
 import os
 import shutil
 import sys
@@ -123,7 +124,7 @@ def ValidatePaths(arg, nameArg, errors):
     return arg
 
 
-def getBoundingBoxes(directory,
+def getBoundingBoxes(file,
                      isGT,
                      bbFormat,
                      coordType,
@@ -136,33 +137,18 @@ def getBoundingBoxes(directory,
     if allClasses is None:
         allClasses = []
     # Read ground truths
-    os.chdir(directory)
-    files = glob.glob("*.txt")
-    files.sort()
-    # Read GT detections from txt file
-    # Each line of the files in the groundtruths folder represents a ground truth bounding box
-    # (bounding boxes that a detector should detect)
-    # Each value of each line is  "class_id, x, y, width, height" respectively
-    # Class_id represents the class of the bounding box
-    # x, y represents the most top-left coordinates of the bounding box
-    # x2, y2 represents the most bottom-right coordinates of the bounding box
-    for f in files:
-        nameOfImage = f.replace(".txt", "")
-        fh1 = open(f, "r")
-        for line in fh1:
-            line = line.replace("\n", "")
-            if line.replace(' ', '') == '':
-                continue
-            splitLine = line.split(" ")
+    with open(file) as f:
+        raw = f.read()
+    images = json.loads(raw)
+    keys = sorted(images.keys())
+    for k in keys:
+        values = images[k]
+        for bbox in values:
+            label = bbox['label']
+            x, y, w, h = bbox['bbox']
             if isGT:
-                # idClass = int(splitLine[0]) #class
-                idClass = (splitLine[0])  # class
-                x = float(splitLine[1])
-                y = float(splitLine[2])
-                w = float(splitLine[3])
-                h = float(splitLine[4])
-                bb = BoundingBox(nameOfImage,
-                                 idClass,
+                bb = BoundingBox(k,
+                                 label,
                                  x,
                                  y,
                                  w,
@@ -172,15 +158,9 @@ def getBoundingBoxes(directory,
                                  BBType.GroundTruth,
                                  format=bbFormat)
             else:
-                # idClass = int(splitLine[0]) #class
-                idClass = (splitLine[0])  # class
-                confidence = float(splitLine[1])
-                x = float(splitLine[2])
-                y = float(splitLine[3])
-                w = float(splitLine[4])
-                h = float(splitLine[5])
-                bb = BoundingBox(nameOfImage,
-                                 idClass,
+                confidence = bbox['confidence']
+                bb = BoundingBox(k,
+                                 label,
                                  x,
                                  y,
                                  w,
@@ -191,9 +171,8 @@ def getBoundingBoxes(directory,
                                  confidence,
                                  format=bbFormat)
             allBoundingBoxes.addBoundingBox(bb)
-            if idClass not in allClasses:
-                allClasses.append(idClass)
-        fh1.close()
+            if label not in allClasses:
+                allClasses.append(label)
     return allBoundingBoxes, allClasses
 
 
@@ -220,13 +199,13 @@ parser.add_argument('-v', '--version', action='version', version='%(prog)s ' + V
 parser.add_argument('-gt',
                     '--gtfolder',
                     dest='gtFolder',
-                    default=os.path.join(currentPath, 'groundtruths'),
+                    default=os.path.join(currentPath, 'data', 'ground_truths'),
                     metavar='',
                     help='folder containing your ground truth bounding boxes')
 parser.add_argument('-det',
                     '--detfolder',
                     dest='detFolder',
-                    default=os.path.join(currentPath, 'detections'),
+                    default=os.path.join(currentPath, 'data', 'inferences'),
                     metavar='',
                     help='folder containing your detected bounding boxes')
 # Optional
@@ -240,14 +219,14 @@ parser.add_argument('-t',
 parser.add_argument('-gtformat',
                     dest='gtFormat',
                     metavar='',
-                    default='xywh',
+                    default='xyrb',
                     help='format of the coordinates of the ground truth bounding boxes: '
                     '(\'xywh\': <left> <top> <width> <height>)'
                     ' or (\'xyrb\': <left> <top> <right> <bottom>)')
 parser.add_argument('-detformat',
                     dest='detFormat',
                     metavar='',
-                    default='xywh',
+                    default='xyrb',
                     help='format of the coordinates of the detected bounding boxes '
                     '(\'xywh\': <left> <top> <width> <height>) '
                     'or (\'xyrb\': <left> <top> <right> <bottom>)')

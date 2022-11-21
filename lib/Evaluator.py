@@ -20,17 +20,6 @@ from BoundingBoxes import *
 from utils import *
 
 
-class NpEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, np.integer):
-            return int(obj)
-        if isinstance(obj, np.floating):
-            return float(obj)
-        if isinstance(obj, np.ndarray):
-            return []
-        return json.JSONEncoder.default(self, obj)
-
-
 class Evaluator:
     def GetPascalVOCMetrics(self,
                             boundingboxes,
@@ -68,7 +57,6 @@ class Evaluator:
         # Get all classes
         classes = []
         # Loop through all bounding boxes and separate them into GTs and detections
-        print("bounding boxes", len(boundingboxes.getBoundingBoxes()))
         for bb in boundingboxes.getBoundingBoxes():
             # [imageName, class, confidence, (bb coordinates XYX2Y2)]
             if bb.getBBType() == BBType.GroundTruth:
@@ -87,9 +75,6 @@ class Evaluator:
             # get class
             if bb.getClassId() not in classes:
                 classes.append(bb.getClassId())
-        print("gts", len(groundTruths))
-        print("infs", len(detections))
-        print("classes", len(classes))
         classes = sorted(classes)
         # Precision x Recall is obtained individually by each class
         # Loop through by classes
@@ -106,9 +91,6 @@ class Evaluator:
                     gts[g[0]] = gts.get(g[0], []) + [g]
 
             # sort detections by decreasing confidence
-            print("class", c)
-            print("class_gts", len(gts))
-            print("class_infs", len(dects))
             dects = sorted(dects, key=lambda conf: conf[2], reverse=True)
             confs = [d[2] for d in dects]
             TP = np.zeros(len(dects))
@@ -165,7 +147,6 @@ class Evaluator:
                 'total TP': np.sum(TP),
                 'total FP': np.sum(FP)
             }
-            print(json.dumps(r, indent=2, cls=NpEncoder))
             ret.append(r)
         return ret
 

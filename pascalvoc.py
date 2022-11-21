@@ -124,6 +124,10 @@ def ValidatePaths(arg, nameArg, errors):
     return arg
 
 
+def locator_as_relative_path(locator: str) -> str:
+    return "/".join(locator.split("/")[-2:])
+
+
 def getBoundingBoxes(file,
                      isGT,
                      bbFormat,
@@ -140,6 +144,7 @@ def getBoundingBoxes(file,
     with open(file) as f:
         raw = f.read()
     images = json.loads(raw)
+    images = {locator_as_relative_path(k): v for k, v in images.items()}
     keys = sorted(images.keys())
     for k in keys:
         values = images[k]

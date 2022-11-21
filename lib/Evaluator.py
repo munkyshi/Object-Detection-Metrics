@@ -27,7 +27,7 @@ class NpEncoder(json.JSONEncoder):
         if isinstance(obj, np.floating):
             return float(obj)
         if isinstance(obj, np.ndarray):
-            return obj.tolist()[:100]
+            return []
         return json.JSONEncoder.default(self, obj)
 
 
@@ -68,7 +68,7 @@ class Evaluator:
         # Get all classes
         classes = []
         # Loop through all bounding boxes and separate them into GTs and detections
-        print(len(boundingboxes.getBoundingBoxes()))
+        print("bounding boxes", len(boundingboxes.getBoundingBoxes()))
         for bb in boundingboxes.getBoundingBoxes():
             # [imageName, class, confidence, (bb coordinates XYX2Y2)]
             if bb.getBBType() == BBType.GroundTruth:

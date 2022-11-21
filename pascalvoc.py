@@ -158,7 +158,7 @@ def getBoundingBoxes(file,
                                  BBType.GroundTruth,
                                  format=bbFormat)
             else:
-                confidence = bbox['confidence']
+                confidence = float(bbox['confidence'])
                 bb = BoundingBox(k,
                                  label,
                                  x,

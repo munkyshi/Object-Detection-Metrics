@@ -92,6 +92,7 @@ class Evaluator:
 
             # sort detections by decreasing confidence
             dects = sorted(dects, key=lambda conf: conf[2], reverse=True)
+            confs = [d[2] for d in dects]
             TP = np.zeros(len(dects))
             FP = np.zeros(len(dects))
             # create dictionary with amount of gts for each image
@@ -138,6 +139,7 @@ class Evaluator:
                 'class': c,
                 'precision': prec,
                 'recall': rec,
+                'confs': confs,
                 'AP': ap,
                 'interpolated precision': mpre,
                 'interpolated recall': mrec,
@@ -197,6 +199,7 @@ class Evaluator:
             classId = result['class']
             precision = result['precision']
             recall = result['recall']
+            confs = result['confs']
             average_precision = result['AP']
             mpre = result['interpolated precision']
             mrec = result['interpolated recall']

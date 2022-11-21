@@ -57,6 +57,7 @@ class Evaluator:
         # Get all classes
         classes = []
         # Loop through all bounding boxes and separate them into GTs and detections
+        print(len(boundingboxes.getBoundingBoxes()))
         for bb in boundingboxes.getBoundingBoxes():
             # [imageName, class, confidence, (bb coordinates XYX2Y2)]
             if bb.getBBType() == BBType.GroundTruth:
@@ -75,6 +76,9 @@ class Evaluator:
             # get class
             if bb.getClassId() not in classes:
                 classes.append(bb.getClassId())
+        print("gts", len(groundTruths))
+        print("infs", len(detections))
+        print("classes", len(classes))
         classes = sorted(classes)
         # Precision x Recall is obtained individually by each class
         # Loop through by classes
@@ -91,6 +95,9 @@ class Evaluator:
                     gts[g[0]] = gts.get(g[0], []) + [g]
 
             # sort detections by decreasing confidence
+            print("class", c)
+            print("class_gts", len(gts))
+            print("class_infs", len(dects))
             dects = sorted(dects, key=lambda conf: conf[2], reverse=True)
             confs = [d[2] for d in dects]
             TP = np.zeros(len(dects))
@@ -191,7 +198,7 @@ class Evaluator:
         """
         results = self.GetPascalVOCMetrics(boundingBoxes, IOUThreshold, method)
         result = None
-        # Each resut represents a class
+        # Each result represents a class
         for result in results:
             if result is None:
                 raise IOError('Error: Class %d could not be found.' % classId)

@@ -133,7 +133,7 @@ class BoundingBox:
         det2ImgSize = det2.getImageSize()
 
         if det1.getClassId() == det2.getClassId() and \
-           det1.classConfidence == det2.classConfidenc() and \
+           det1.classConfidence == det2.classConfidence() and \
            det1BB[0] == det2BB[0] and \
            det1BB[1] == det2BB[1] and \
            det1BB[2] == det2BB[2] and \

@@ -114,9 +114,9 @@ def ValidateCoordinatesTypes(arg, argName, errors):
 
 def ValidatePaths(arg, nameArg, errors):
     if arg is None:
-        errors.append('argument %s: invalid directory' % nameArg)
-    elif os.path.isdir(arg) is False and os.path.isdir(os.path.join(currentPath, arg)) is False:
-        errors.append('argument %s: directory does not exist \'%s\'' % (nameArg, arg))
+        errors.append('argument %s: invalid path' % nameArg)
+    # elif os.path.isdir(arg) is False and os.path.isdir(os.path.join(currentPath, arg)) is False:
+    #     errors.append('argument %s: directory does not exist \'%s\'' % (nameArg, arg))
     # elif os.path.isdir(os.path.join(currentPath, arg)) is True:
     #     arg = os.path.join(currentPath, arg)
     else:
@@ -270,9 +270,9 @@ if ValidateMandatoryArgs(args.gtFolder, '-gt/--gtfolder', errors):
     gtFolder = ValidatePaths(args.gtFolder, '-gt/--gtfolder', errors)
 else:
     # errors.pop()
-    gtFolder = os.path.join(currentPath, 'groundtruths')
-    if os.path.isdir(gtFolder) is False:
-        errors.append('folder %s not found' % gtFolder)
+    gtFolder = os.path.join(currentPath, 'data', 'ground_truths')
+    # if os.path.isdir(gtFolder) is False:
+    #     errors.append('folder %s not found' % gtFolder)
 # Coordinates types
 gtCoordType = ValidateCoordinatesTypes(args.gtCoordinates, '-gtCoordinates', errors)
 detCoordType = ValidateCoordinatesTypes(args.detCoordinates, '-detCoordinates', errors)
@@ -286,9 +286,9 @@ if ValidateMandatoryArgs(args.detFolder, '-det/--detfolder', errors):
     detFolder = ValidatePaths(args.detFolder, '-det/--detfolder', errors)
 else:
     # errors.pop()
-    detFolder = os.path.join(currentPath, 'detections')
-    if os.path.isdir(detFolder) is False:
-        errors.append('folder %s not found' % detFolder)
+    detFolder = os.path.join(currentPath, 'data', 'inferences')
+    # if os.path.isdir(detFolder) is False:
+    #     errors.append('folder %s not found' % detFolder)
 if args.savePath is not None:
     savePath = ValidatePaths(args.savePath, '-sp/--savepath', errors)
 else:

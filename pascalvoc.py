@@ -142,8 +142,7 @@ def getBoundingBoxes(file,
         allClasses = []
     # Read ground truths
     with open(file) as f:
-        raw = f.read()
-    images = json.loads(raw)
+        images = json.loads(f.read())
     images = {locator_as_relative_path(k): v for k, v in images.items()}
     keys = sorted(images.keys())
     for k in keys:
